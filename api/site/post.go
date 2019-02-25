@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"time"
+
+	"github.com/jasonlvhit/gocron"
+	"github.com/sparrc/go-ping"
 )
 
 // isValidUrl tests a string to determine if it is a url or not.
@@ -63,7 +67,18 @@ func doPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_, found := db[newSite.Endpoint]
+
+	if found {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, `{ "error": "Site already exists!" }`)
+		return
+	}
+
+	pingSite(&newSite)
+
 	db[newSite.Endpoint] = &newSite
+	go registerPingCron(&newSite)
 
 	respSite := Site{
 		Endpoint: newSite.Endpoint,
@@ -73,4 +88,45 @@ func doPost(w http.ResponseWriter, r *http.Request) {
 
 	je := json.NewEncoder(w)
 	je.Encode(respSite)
+}
+
+func pingSite(site *Site) {
+	endpoint, _ := url.Parse(site.Endpoint)
+	pinger, err := ping.NewPinger(endpoint.Hostname())
+
+	if err != nil {
+		return
+	}
+
+	pinger.Count = 1
+	pinger.Timeout = 800000000 // 800 milliseconds
+
+	// Because pinger.Run() is thread blocking we are creating channels and running pinger in a goroutine
+	statsChnl := make(chan *ping.Statistics)
+	pinger.OnFinish = func(s *ping.Statistics) {
+		statsChnl <- s
+		return
+	}
+
+	go pinger.Run()
+
+	stats := <-statsChnl
+
+	if stats.PacketsRecv != 1 {
+		return
+	}
+
+	site.LastPing = time.Now()
+
+	fmt.Printf(
+		"Pinged %s at %s and received %d packets",
+		site.Endpoint,
+		site.LastPing.Format("2006-01-02 15:04:05"),
+		stats.PacketsRecv,
+	)
+}
+
+func registerPingCron(site *Site) {
+	gocron.Every(10).Seconds().Do(pingSite, site)
+	<-gocron.Start()
 }

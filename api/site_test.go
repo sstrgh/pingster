@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/sstrgh/pingster/api/site"
 )
 
@@ -76,7 +77,7 @@ func TestServeHTTP(t *testing.T) {
 		siteResp := &site.Site{}
 		json.NewDecoder(response.Body).Decode(&siteResp)
 
-		if !cmp.Equal(siteReq, siteResp) {
+		if !cmp.Equal(siteReq, siteResp, cmpopts.IgnoreUnexported(site.Site{})) {
 			t.Errorf("StatusCode for requests to 'api/sites' needs to be %+v, got %+v,",
 				siteReq,
 				siteResp,
@@ -92,7 +93,7 @@ func TestServeHTTP(t *testing.T) {
 		var getRespSite map[string]site.Site
 		json.NewDecoder(getResponse.Body).Decode(&getRespSite)
 
-		if !cmp.Equal(*siteReq, getRespSite[siteReq.Endpoint]) {
+		if !cmp.Equal(*siteReq, getRespSite[siteReq.Endpoint], cmpopts.IgnoreUnexported(site.Site{})) {
 			t.Errorf("StatusCode for requests to 'api/sites' needs to be %+v, got %+v,",
 				*siteReq,
 				getRespSite[siteReq.Endpoint],

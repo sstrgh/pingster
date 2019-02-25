@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/jasonlvhit/gocron"
 )
 
 // API handles api requests to '/sites/
@@ -12,9 +14,10 @@ type API struct{}
 
 // Site is a representation for a site that needs to be pinged
 type Site struct {
-	Endpoint string    `json:"endpoint,omitempty"`
-	Name     string    `json:"name"`
-	LastPing time.Time `json:"lastPing"`
+	Endpoint  string    `json:"endpoint,omitempty"`
+	Name      string    `json:"name"`
+	LastPing  time.Time `json:"lastPing"`
+	scheduler *gocron.Scheduler
 }
 
 var db = map[string]*Site{}
