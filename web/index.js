@@ -52,6 +52,57 @@ function createLastPingedElement(lastPing) {
   return div;
 }
 
+function createDeletButton(endpoint) {
+  var btn = document.createElement("BUTTON");
+  var t = document.createTextNode("Delete Site");
+  btn.onclick = removeSite;
+  btn.id = endpoint;
+  btn.appendChild(t);
+  return btn;
+}
+
+function removeSite(e) {
+  e.preventDefault();
+
+  var xhttp = new XMLHttpRequest();
+
+  xhttp.onreadystatechange = function() {
+    if (this.readyState === 4) {
+      if (this.status === 202) {
+        var data = JSON.parse(this.responseText);
+        var endpoints = Object.keys(data);
+
+        if (endpoints.length === 0) {
+          var sitesEl = document.getElementById("sites");
+          sitesEl.innerHTML = "";
+        } else if (endpoints.length > 0) {
+          var sitesEl = document.getElementById("sites");
+          sitesEl.innerHTML = "";
+
+          for (var i = 0; i < endpoints.length; i++) {
+            var endpointEl = createEndpointElement({ ...data[endpoints[i]] });
+            sitesEl.appendChild(endpointEl);
+          }
+        }
+      } else {
+        var data = JSON.parse(this.responseText);
+        errorsElement = document.getElementById("errors");
+        errorsElement.style.display = "block";
+        if (data.errors) {
+          errorsElement.innerHTML = data.errors.join(", ");
+        } else {
+          errorsElement.innerHTML = data.error;
+        }
+      }
+    }
+  };
+
+  var data = { endpoint: e.target.id };
+
+  xhttp.open("DELETE", "/api/sites", true);
+  xhttp.send(JSON.stringify(data));
+}
+
 function createEndpointElement(data) {
   var endpointEl = document.createElement("div");
   endpointEl.className = "endpointEl-container";
@@ -68,6 +119,9 @@ function createEndpointElement(data) {
   var lastPingEl = createLastPingedElement(data.lastPing);
   endpointEl.appendChild(lastPingEl);
 
+  var deleteButton = createDeletButton(data.endpoint);
+  endpointEl.appendChild(deleteButton);
+
   return endpointEl;
 }
 
@@ -79,6 +133,8 @@ function addSite(e) {
   xhttp.onreadystatechange = function() {
     if (this.readyState === 4) {
       if (this.status === 200) {
+        errorsElement = document.getElementById("errors");
+        errorsElement.style.display = "none";
         var sitesEl = document.getElementById("sites");
         var data = JSON.parse(this.responseText);
         var endpointEl = createEndpointElement(data);
