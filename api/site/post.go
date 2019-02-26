@@ -22,9 +22,11 @@ func isValidURL(toTest string) bool {
 	return true
 }
 
-func validateErrors(newSite Site) struct{ Errors []string } {
+func validateErrors(newSite Site) struct {
+	Errors []string `json:"errors"`
+} {
 	validationErrors := struct {
-		Errors []string
+		Errors []string `json:"errors"`
 	}{}
 
 	if !isValidURL(newSite.Endpoint) {
@@ -95,6 +97,11 @@ func pingSite(site *Site) {
 	pinger, err := ping.NewPinger(endpoint.Hostname())
 
 	if err != nil {
+		fmt.Printf(
+			"Failed to resolve host for %s at %s",
+			site.Endpoint,
+			time.Now().Format("2006-01-02 15:04:05"),
+		)
 		return
 	}
 
@@ -113,6 +120,11 @@ func pingSite(site *Site) {
 	stats := <-statsChnl
 
 	if stats.PacketsRecv != 1 {
+		fmt.Printf(
+			"Pinged %s at %s and failed to receive packets",
+			site.Endpoint,
+			site.LastPing.Format("2006-01-02 15:04:05"),
+		)
 		return
 	}
 

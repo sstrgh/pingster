@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Pingster</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" media="screen" href="index.css" />
+  </head>
+
+  <body onload="getSites()">
+    <div id="head">
+      <h3>Pingster</h3>
+    </div>
+    <div id="main">
+      <form action="http://localhost:3000/api/sites" method="post">
+        <fieldset>
+          <label for="name"
+            >name:
+            <input type="text" id="name" name="name" />
+          </label>
+          <label for="endpoint"
+            >endpoint:
+            <input type="text" id="endpoint" name="endpoint" />
+          </label>
+          <button type="button" onclick="addSite(event)">Add Site</button>
+          <span id="errors" class="error-field"></span>
+        </fieldset>
+      </form>
+      <h3>Sites:</h3>
+      <div id="sites"></div>
+    </div>
+    <script src="index.js"></script>
+  </body>
+</html>

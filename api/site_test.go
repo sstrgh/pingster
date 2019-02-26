@@ -45,7 +45,7 @@ func TestServeHTTP(t *testing.T) {
 		}
 
 		validationErrors := response.Body.String()
-		validationWant := "{\"Errors\":[\"Invalid URL\",\"Name Required\"]}"
+		validationWant := "{\"errors\":[\"Invalid URL\",\"Name Required\"]}"
 		if validationErrors != validationWant {
 			t.Errorf("StatusCode for requests to 'api/sites' needs to be %s, got '%s',", validationWant, validationErrors)
 		}
