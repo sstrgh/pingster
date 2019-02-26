@@ -35,5 +35,6 @@
  - This application hasnt been built using websockets so in order to see updated statuses, you'll need to refresh the page.
  - Use packet information to track latency regressions and notify administrators
  - Connecting with other interfaces to make alerts more real time e.g. connecting it with twilio/slack to push alerts promptly
-
+ - Use mocks and dependency injection to create tests that can more adequately cover the scenarios at hand
+ 
 [app-ui]: http://i63.tinypic.com/qyvl1u.jpg "app-ui"
