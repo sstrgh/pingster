@@ -8,4 +8,4 @@ Tasks
 - [x] Add a DELETE route that allows deregistering of endpoints
 - [X] Add frontend to display all scheduled ping jobs
 - [X] Update frontend to allow adding of more ping jobs
-- [ ] Update frontend to delete ping jobs
+- [X] Update frontend to delete ping jobs
