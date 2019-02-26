@@ -1,4 +1,4 @@
-const DELAY = 10000;
+const DELAY = 360000;
 
 function createNameElement(name) {
   var div = document.createElement("div");
