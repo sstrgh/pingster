@@ -144,7 +144,7 @@ func TestServeHTTP(t *testing.T) {
 			)
 		}
 
-		// Testing to see if get request displays only the sites that are left
+		// Testing to see if map of sites still contain google
 		getRequest, _ := http.NewRequest(http.MethodGet, "/", nil)
 		getResponse := httptest.NewRecorder()
 

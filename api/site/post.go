@@ -41,18 +41,19 @@ func validateErrors(newSite Site) struct {
 }
 
 func doPost(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	var newSite Site
-
 	if r.Body == nil {
 		http.Error(w, "Please send a request body", 400)
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
+
+	var newSite Site
 	err := json.NewDecoder(r.Body).Decode(&newSite)
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	validationErrors := validateErrors(newSite)

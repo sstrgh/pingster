@@ -7,15 +7,15 @@ import (
 
 func doDelete(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var siteToDelete struct {
-		Endpoint string `json:"endpoint"`
-	}
 
 	if r.Body == nil {
 		http.Error(w, "Please send a request body", 400)
 		return
 	}
 
+	var siteToDelete struct {
+		Endpoint string `json:"endpoint"`
+	}
 	err := json.NewDecoder(r.Body).Decode(&siteToDelete)
 
 	if err != nil {
@@ -32,7 +32,6 @@ func doDelete(w http.ResponseWriter, r *http.Request) {
 	delete(db, siteToDelete.Endpoint)
 
 	w.WriteHeader(http.StatusAccepted)
-
 	je := json.NewEncoder(w)
 	je.Encode(db)
 }
