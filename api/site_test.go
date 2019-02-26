@@ -3,12 +3,11 @@ package site
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/sstrgh/pingster/api/site"
 )
 
@@ -77,10 +76,10 @@ func TestServeHTTP(t *testing.T) {
 		siteResp := &site.Site{}
 		json.NewDecoder(response.Body).Decode(&siteResp)
 
-		if !cmp.Equal(siteReq, siteResp, cmpopts.IgnoreUnexported(site.Site{})) {
-			t.Errorf("StatusCode for requests to 'api/sites' needs to be %+v, got %+v,",
-				siteReq,
-				siteResp,
+		if siteResp.Endpoint != siteReq.Endpoint {
+			t.Errorf("Site endpoint needs to be %+v, got %+v,",
+				siteReq.Endpoint,
+				siteResp.Endpoint,
 			)
 		}
 
@@ -93,13 +92,74 @@ func TestServeHTTP(t *testing.T) {
 		var getRespSite map[string]site.Site
 		json.NewDecoder(getResponse.Body).Decode(&getRespSite)
 
-		if !cmp.Equal(*siteReq, getRespSite[siteReq.Endpoint], cmpopts.IgnoreUnexported(site.Site{})) {
-			t.Errorf("StatusCode for requests to 'api/sites' needs to be %+v, got %+v,",
-				*siteReq,
+		_, found := getRespSite[siteReq.Endpoint]
+
+		if !found {
+			t.Errorf("Expected %+v to be here",
 				getRespSite[siteReq.Endpoint],
 			)
 		}
 
 	})
 
+	t.Run("Testing responses for delete requests to 'api/sites'", func(t *testing.T) {
+		// Adding google to db
+		siteReq := &site.Site{
+			Name:     "google",
+			Endpoint: "http://www.google.com",
+		}
+		requestBody, _ := json.Marshal(siteReq)
+		request, _ := http.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
+		response := httptest.NewRecorder()
+		api.ServeHTTP(response, request)
+
+		// Adding facebook to db
+		siteReq = &site.Site{
+			Name:     "facebook",
+			Endpoint: "http://www.facebook.com",
+		}
+		requestBody, _ = json.Marshal(siteReq)
+		request, _ = http.NewRequest(http.MethodPost, "/", bytes.NewBuffer(requestBody))
+		response = httptest.NewRecorder()
+		api.ServeHTTP(response, request)
+
+		// deleting google
+		deleteReq := struct {
+			Endpoint string `json:"endpoint"`
+		}{
+			Endpoint: "http://www.google.com",
+		}
+		requestBody, _ = json.Marshal(deleteReq)
+		request, _ = http.NewRequest(http.MethodDelete, "/", bytes.NewBuffer(requestBody))
+		response = httptest.NewRecorder()
+		api.ServeHTTP(response, request)
+
+		// Checking to see if status code is 202
+		statusCode := response.Code
+		statusCodeWant := 202
+		if statusCode != statusCodeWant {
+			t.Errorf("StatusCode for requests to 'api/sites' needs to be %d, got '%d',",
+				statusCodeWant,
+				statusCode,
+			)
+		}
+
+		// Testing to see if get request displays only the sites that are left
+		getRequest, _ := http.NewRequest(http.MethodGet, "/", nil)
+		getResponse := httptest.NewRecorder()
+
+		api.ServeHTTP(getResponse, getRequest)
+
+		var getRespSite map[string]site.Site
+		json.NewDecoder(getResponse.Body).Decode(&getRespSite)
+
+		_, found := getRespSite[deleteReq.Endpoint]
+
+		if found {
+			fmt.Printf("\n%+v\n", getRespSite)
+			t.Errorf("Site %+v should not be here",
+				getRespSite[deleteReq.Endpoint],
+			)
+		}
+	})
 }

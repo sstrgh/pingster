@@ -14,7 +14,7 @@ type API struct{}
 
 // Site is a representation for a site that needs to be pinged
 type Site struct {
-	Endpoint  string    `json:"endpoint,omitempty"`
+	Endpoint  string    `json:"endpoint"`
 	Name      string    `json:"name"`
 	LastPing  time.Time `json:"lastPing"`
 	scheduler *gocron.Scheduler
@@ -28,6 +28,8 @@ func (a *API) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		doGet(w, r)
 	case http.MethodPost:
 		doPost(w, r)
+	case http.MethodDelete:
+		doDelete(w, r)
 	default:
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "Unsupported method '%v' to %v\n", r.Method, r.URL)
