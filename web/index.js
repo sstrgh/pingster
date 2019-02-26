@@ -1,3 +1,5 @@
+const DELAY = 10000;
+
 function createNameElement(name) {
   var div = document.createElement("div");
   div.innerHTML = `Name: ${name}`;
@@ -17,7 +19,7 @@ function createEndpointValueElement(endpoint) {
 function createStatusElement(lastPing) {
   // Calcluating time since last ping
   var diff = new Date() - Date.parse(lastPing);
-  var status = diff < 10000 ? `Status: Healthy` : `Status: Unhealthy`;
+  var status = diff < DELAY ? `Status: Healthy` : `Status: Unhealthy`;
 
   var div = document.createElement("div");
   div.innerHTML = status;

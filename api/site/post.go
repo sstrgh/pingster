@@ -141,6 +141,6 @@ func pingSite(site *Site) {
 
 func registerPingCron(site *Site) {
 	site.scheduler = gocron.NewScheduler()
-	site.scheduler.Every(10).Seconds().Do(pingSite, site)
+	site.scheduler.Every(300).Seconds().Do(pingSite, site) // Scheduled a job to run every 5mins(300 seconds)
 	<-site.scheduler.Start()
 }
