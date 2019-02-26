@@ -20,8 +20,6 @@
 5. Open your browser and go to http://localhost:3000
 6. You will be presented with the application that looks like this
 ![alt text][app-ui]
-[app-ui]: http://i63.tinypic.com/qyvl1u.jpg "app-ui"
-
 
 ### Notes
 
@@ -37,3 +35,5 @@
  - This application hasnt been built using websockets so in order to see updated statuses, you'll need to refresh the page.
  - Use packet information to track latency regressions and notify administrators
  - Connecting with other interfaces to make alerts more real time e.g. connecting it with twilio/slack to push alerts promptly
+
+[app-ui]: http://i63.tinypic.com/qyvl1u.jpg "app-ui"
