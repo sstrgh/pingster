@@ -16,6 +16,14 @@ function createEndpointValueElement(endpoint) {
   return div;
 }
 
+function createPingTypeValueElement(pingType) {
+  var div = document.createElement("div");
+  div.innerHTML = `Ping Type: ${pingType}`;
+  div.className = "pingTypeEl-pingType-value";
+
+  return div;
+}
+
 function createStatusElement(lastPing) {
   // Calcluating time since last ping
   var diff = new Date() - Date.parse(lastPing);
@@ -121,6 +129,9 @@ function createEndpointElement(data) {
   var lastPingEl = createLastPingedElement(data.lastPing);
   endpointEl.appendChild(lastPingEl);
 
+  var pingTypeEl = createPingTypeValueElement(data.pingType);
+  endpointEl.appendChild(pingTypeEl);
+
   var deleteButton = createDeletButton(data.endpoint);
   endpointEl.appendChild(deleteButton);
 
@@ -156,7 +167,8 @@ function addSite(e) {
 
   var name = document.getElementById("name").value;
   var endpoint = document.getElementById("endpoint").value;
-  var data = { name: name, endpoint: endpoint };
+  var pingType = document.getElementById("pingType").value;
+  var data = { name: name, endpoint: endpoint, pingType: pingType };
 
   xhttp.open("POST", "/api/sites", true);
   xhttp.send(JSON.stringify(data));

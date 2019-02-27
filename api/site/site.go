@@ -17,6 +17,7 @@ type Site struct {
 	Endpoint  string    `json:"endpoint"`
 	Name      string    `json:"name"`
 	LastPing  time.Time `json:"lastPing"`
+	PingType  string    `json:"pingType"`
 	scheduler *gocron.Scheduler
 }
 

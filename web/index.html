@@ -23,6 +23,13 @@
             >Endpoint:
             <input type="text" id="endpoint" name="endpoint" />
           </label>
+          <label for="pingType"
+            >Ping Type:
+            <select type="text" id="pingType" name="pingType">
+              <option value="icmp">icmp</option>
+              <option value="tcp">tcp</option>
+            </select>
+          </label>
           <button type="button" onclick="addSite(event)">Add Site</button>
           <span id="errors" class="error-field"></span>
         </fieldset>

@@ -56,6 +56,7 @@ func doPost(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Printf("%+v", err)
 		return
 	}
 
@@ -86,22 +87,22 @@ func doPost(w http.ResponseWriter, r *http.Request) {
 	db[newSite.Endpoint] = &newSite
 	go registerPingCron(&newSite)
 
-	respSite := Site{
-		Endpoint: newSite.Endpoint,
-		Name:     newSite.Name,
-		LastPing: newSite.LastPing,
-	}
-
 	je := json.NewEncoder(w)
-	je.Encode(respSite)
+	je.Encode(&newSite)
 }
 
 func pingEndpoint(site *Site) {
 	endpoint, _ := url.Parse(site.Endpoint)
 	timeout, _ := time.ParseDuration("800ms")
-	pingFunc := tcpPing
 
-	err := pingFunc(endpoint, timeout)
+	var err error
+
+	if site.PingType == "tcp" {
+		err = tcpPing(endpoint, timeout)
+	} else {
+		site.PingType = "icmp"
+		err = icmpPing(endpoint, timeout)
+	}
 
 	if err != nil {
 		return
@@ -110,7 +111,8 @@ func pingEndpoint(site *Site) {
 	site.LastPing = time.Now()
 
 	fmt.Printf(
-		"Successfully pinged %s at %s",
+		"[%s] Successfully pinged %s at %s",
+		site.PingType,
 		site.Endpoint,
 		site.LastPing.Format("2006-01-02 15:04:05"),
 	)
