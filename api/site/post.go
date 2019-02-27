@@ -2,6 +2,7 @@ package site
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -78,7 +79,7 @@ func doPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pingSite(&newSite)
+	pingEndpoint(&newSite)
 
 	db[newSite.Endpoint] = &newSite
 	go registerPingCron(&newSite)
@@ -93,21 +94,41 @@ func doPost(w http.ResponseWriter, r *http.Request) {
 	je.Encode(respSite)
 }
 
-func pingSite(site *Site) {
+func pingEndpoint(site *Site) {
 	endpoint, _ := url.Parse(site.Endpoint)
+	timeout, _ := time.ParseDuration("800ms")
+	pingFunc := icmpPing
+
+	err := pingFunc(endpoint, timeout)
+
+	if err != nil {
+		return
+	}
+
+	site.LastPing = time.Now()
+
+	fmt.Printf(
+		"Successfully pinged %s at %s",
+		site.Endpoint,
+		site.LastPing.Format("2006-01-02 15:04:05"),
+	)
+
+}
+
+func icmpPing(endpoint *url.URL, timeout time.Duration) error {
 	pinger, err := ping.NewPinger(endpoint.Hostname())
 
 	if err != nil {
 		fmt.Printf(
 			"Failed to resolve host for %s at %s",
-			site.Endpoint,
+			endpoint,
 			time.Now().Format("2006-01-02 15:04:05"),
 		)
-		return
+		return err
 	}
 
 	pinger.Count = 1
-	pinger.Timeout = 800000000 // 800 milliseconds
+	pinger.Timeout = timeout
 
 	// Because pinger.Run() is thread blocking we are creating channels and running pinger in a goroutine
 	statsChnl := make(chan *ping.Statistics)
@@ -123,24 +144,19 @@ func pingSite(site *Site) {
 	if stats.PacketsRecv != 1 {
 		fmt.Printf(
 			"Pinged %s at %s and failed to receive packets",
-			site.Endpoint,
-			site.LastPing.Format("2006-01-02 15:04:05"),
+			endpoint,
+			time.Now().Format("2006-01-02 15:04:05"),
 		)
-		return
+		err := errors.New("Failed to receive a response")
+
+		return err
 	}
 
-	site.LastPing = time.Now()
-
-	fmt.Printf(
-		"Pinged %s at %s and received %d packets",
-		site.Endpoint,
-		site.LastPing.Format("2006-01-02 15:04:05"),
-		stats.PacketsRecv,
-	)
+	return nil
 }
 
 func registerPingCron(site *Site) {
 	site.scheduler = gocron.NewScheduler()
-	site.scheduler.Every(300).Seconds().Do(pingSite, site) // Scheduled a job to run every 5mins(300 seconds)
+	site.scheduler.Every(10).Seconds().Do(pingEndpoint, site) // Scheduled a job to run every 5mins(300 seconds)
 	<-site.scheduler.Start()
 }
