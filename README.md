@@ -1,7 +1,8 @@
 ## PINGSTER
 
 Hosted on Heroku: https://hooq-pingster.herokuapp.com/
-Take note that heroku does not allow icmp pings, so that will not work.
+
+Take note that heroku does not allow icmp pings, so that will not work, it wont throw an error, it will just show that it has never made a successful ping to the host. So in order to test icmp pings you'd need to host it on your own infra that allows it. TCP pings work well on heroku.
 
 ### Tasks
 
