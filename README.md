@@ -36,5 +36,6 @@
  - Use packet information to track latency regressions and notify administrators
  - Connecting with other interfaces to make alerts more real time e.g. connecting it with twilio/slack to push alerts promptly
  - Use mocks and dependency injection to create tests that can more adequately cover the scenarios at hand
+ - The pinging strategy I have utilitzed is through sending packets via icmp, however some hosts prevent icmp pings, the idea is to fall back to a tcp ping in that scenario.
  
 [app-ui]: http://i63.tinypic.com/qyvl1u.jpg "app-ui"
