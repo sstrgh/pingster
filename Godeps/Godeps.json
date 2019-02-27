@@ -1,0 +1,39 @@
+{
+	"ImportPath": "github.com/sstrgh/pingster",
+	"GoVersion": "go1.11",
+	"GodepVersion": "v80",
+	"Deps": [
+		{
+			"ImportPath": "github.com/jasonlvhit/gocron",
+			"Rev": "6771d4b492ba2d5f57919c04b4cddb3735365120"
+		},
+		{
+			"ImportPath": "github.com/sparrc/go-ping",
+			"Rev": "ef3ab45e41b017889941ea5bb796dd502d2b5a1b"
+		},
+		{
+			"ImportPath": "golang.org/x/net/bpf",
+			"Rev": "fe579d43d83210096a79b46dcca0e3721058393a"
+		},
+		{
+			"ImportPath": "golang.org/x/net/icmp",
+			"Rev": "fe579d43d83210096a79b46dcca0e3721058393a"
+		},
+		{
+			"ImportPath": "golang.org/x/net/internal/iana",
+			"Rev": "fe579d43d83210096a79b46dcca0e3721058393a"
+		},
+		{
+			"ImportPath": "golang.org/x/net/internal/socket",
+			"Rev": "fe579d43d83210096a79b46dcca0e3721058393a"
+		},
+		{
+			"ImportPath": "golang.org/x/net/ipv4",
+			"Rev": "fe579d43d83210096a79b46dcca0e3721058393a"
+		},
+		{
+			"ImportPath": "golang.org/x/net/ipv6",
+			"Rev": "fe579d43d83210096a79b46dcca0e3721058393a"
+		}
+	]
+}
