@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/jasonlvhit/gocron"
@@ -97,7 +99,7 @@ func doPost(w http.ResponseWriter, r *http.Request) {
 func pingEndpoint(site *Site) {
 	endpoint, _ := url.Parse(site.Endpoint)
 	timeout, _ := time.ParseDuration("800ms")
-	pingFunc := icmpPing
+	pingFunc := tcpPing
 
 	err := pingFunc(endpoint, timeout)
 
@@ -153,6 +155,35 @@ func icmpPing(endpoint *url.URL, timeout time.Duration) error {
 	}
 
 	return nil
+}
+
+func tcpPing(endpoint *url.URL, timeout time.Duration) error {
+	var port string
+	if strings.Contains(endpoint.String(), "https") {
+		port = "443"
+	} else {
+		port = "80"
+	}
+
+	address := fmt.Sprintf("%s:%s", endpoint.Hostname(), port)
+	conn, err := net.DialTimeout("tcp", address, timeout)
+
+	if conn != nil {
+		conn.Close()
+
+		return nil
+	}
+
+	fmt.Printf("%+v", err)
+
+	fmt.Printf(
+		"\nPinged %s at %s and failed to receive packets",
+		endpoint,
+		time.Now().Format("2006-01-02 15:04:05"),
+	)
+	err = errors.New("Failed to receive a response")
+
+	return err
 }
 
 func registerPingCron(site *Site) {
