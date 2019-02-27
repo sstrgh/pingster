@@ -1,5 +1,8 @@
 ## PINGSTER
 
+Hosted on Heroku: https://hooq-pingster.herokuapp.com/
+Take note that heroku does not allow icmp pings, so that will not work.
+
 ### Tasks
 
 - [x] Add a POST route that allows registration of endpoints that need to be pinged
