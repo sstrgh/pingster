@@ -23,19 +23,21 @@
 
 ### Notes
 
-- The are two properties that can be filled up, `name`, `endpoint`. The endpoint property has to be provided,unique and a valid url e.g. http://www.facebook.com
+- The are two properties that can be filled up, `name`, `endpoint`. The endpoint property has to be provided, unique and a valid url e.g. http://www.facebook.com. The name is required too.
+- The ping type property allows you to select the type of ping you'd like to register e.g. tcp, icmp
 - The current settings for pingster is 
     - Timeout: 800 milliseconds
     - Ping interval: 5mins(300 seconds)
     - Update Interval before the application is deemed unhealthy: 6mins(360000 milliseconds)
 - All registered sites will start a goroutine that will schedule a job to ping the endpoint every 5 mins
 - Click on the delete button to delete the ping job
+- For validations it the following are valid urls: `http://`, `http://aaa`, `http://aaa.ccc`. Not having the `http://` will make the url invalid. Refer to his article to understand more: https://en.wikipedia.org/wiki/URL#Syntax
 
 ### Potential Improvements
  - This application hasnt been built using websockets so in order to see updated statuses, you'll need to refresh the page.
  - Use packet information to track latency regressions and notify administrators
  - Connecting with other interfaces to make alerts more real time e.g. connecting it with twilio/slack to push alerts promptly
  - Use mocks and dependency injection to create tests that can more adequately cover the scenarios at hand
- - The pinging strategy I have utilitzed is through sending packets via icmp, however some hosts prevent icmp pings, the idea is to fall back to a tcp ping in that scenario.
+
  
 [app-ui]: http://i63.tinypic.com/qyvl1u.jpg "app-ui"
